@@ -6,6 +6,10 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    this.x = 0;
+    this.y = this.pickPosition();
+    this.speed = this.pickSpeed();
+    this.reach = 50;
 }
 
 // Update the enemy's position, required method for game
@@ -14,6 +18,23 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+
+    //see if enemy has reached end
+    if(this.x >= 400){
+        //reset speed 
+        this.speed = this.pickSpeed();
+        //reset x
+        this.x = 0;
+        //reset y
+        //this.y = Math.floor((Math.random() * 3)) * 100;
+        this.y = this.pickPosition();
+    }
+
+    this.x = (this.x + (this.speed * dt));
+
+    if(this.hasHitPlayer()){
+        player.reset();
+    }
 }
 
 // Draw the enemy on the screen, required method for game
@@ -21,15 +42,106 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+Enemy.prototype.hasHitPlayer = function() {
+    if(this.x - this.reach < player.x && this.x + this.reach > player.x){
+        if(this.y - this.reach < player.y && this.y + this.reach > player.y)
+            return true;
+    }
+
+    return false;
+}
+
+Enemy.prototype.pickSpeed = function(){
+    return Math.floor((Math.random() * 500) + 50);
+}
+
+Enemy.prototype.pickPosition = function() {
+    
+    var rand = Math.random()
+
+    if (rand < .33){
+       return 60; 
+    }
+
+    if (rand < .66){
+        return 143;
+    }
+        
+    if (rand < 1){
+        return 226;
+    }
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+
+var Player = function(){
+    this.sprite = 'images/char-boy.png';
+    this.x = 200;
+    this.y = 400;
+    this.moveLength = 83;
+
+};
+
+Player.prototype.update = function() {
+
+};
+
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Player.prototype.handleInput = function(keyCode) {
+
+    switch(keyCode) {
+    case 'left':
+        this.x = this.x - this.moveLength;
+        break;
+    case 'up':
+        this.y = this.y - this.moveLength;
+        break;
+    case 'right':
+        this.x = this.x + this.moveLength;
+        break;
+    case 'down':
+        this.y = this.y + this.moveLength;
+        break;
+    }
+};
+
+Player.prototype.reset = function(){
+    player = new Player();
+}
+
+// var Field = function(){
+//     this.row1 = 50;
+//     this.row2 = 150;
+//     this.row3 = 250;
+
+//     this.rows = {
+//         50: 'left',
+//         150: 'up',
+//         250: 'right'
+//     };
+// }
+
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+var allEnemies = [];
+var badguy1 = new Enemy(100);
+var badguy2 = new Enemy(300);
+var badguy3 = new Enemy(500);
 
+allEnemies.push(badguy1);
+allEnemies.push(badguy2);
+allEnemies.push(badguy3);
+
+
+var player = new Player();
 
 
 // This listens for key presses and sends the keys to your
